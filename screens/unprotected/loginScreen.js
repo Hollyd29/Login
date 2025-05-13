@@ -12,8 +12,9 @@ import Toast from "react-native-toast-message";
 import axios from "axios";
 import { url } from "../utils/config";
 import Entypo from "@expo/vector-icons/Entypo";
+import { setToken } from "../utils/tokenStorage";
 
-function LoginScreen() {
+function LoginScreen({ setAuthToken }) {
   const Navigation = useNavigation();
   const loginData = {
     email: "",
@@ -47,8 +48,10 @@ function LoginScreen() {
     try {
       setIsLoading(true);
       const res = await axios.post(`${url}/auth/login`, loginDetails);
+      setToken(res.data.token);
+      setAuthToken(res.data.token);
+      // Navigation.navigate("Home");
       setIsLoading(false);
-      Navigation.navigate("Home");
     } catch (error) {
       console.log(error);
       setIsLoading(false);

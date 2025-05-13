@@ -6,19 +6,53 @@ import LoginScreen from "./screens/unprotected/loginScreen";
 import RegisterScreen from "./screens/unprotected/RegisterScreen";
 import Toast from "react-native-toast-message";
 import HomeScreen from "./screens/protectedscreen/homescreen";
+import { useEffect, useState } from "react";
+import { getToken, removeToken } from "./screens/utils/tokenStorage";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import ProfileScreen from "./screens/protectedscreen/profilescreen";
+import AboutScreen from "./screens/protectedscreen/aboutscreeen";
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
 function App() {
+  // const [isLogingin, setIsLogingin] = useState(true);
+  const [authToken, setAuthToken] = useState(null);
+
+  // This is for checking if to take user to login page (if no token) or to the application (if there is token)
+  useEffect(() => {
+    // removeToken();
+    getToken().then((storedToken) => {
+      setAuthToken(storedToken);
+      // setIsLogingin(false);
+    });
+    // setAuthToken(getToken())
+  }, []);
+
+  // if (isLogingin) {
+  //   return null;
+  // }
+
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style="auto" />
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Login">
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} />
-        </Stack.Navigator>
+        {authToken ? (
+          <Tab.Navigator>
+            <Tab.Screen name="Home">
+              {() => <HomeScreen setAuthToken={setAuthToken} />}
+            </Tab.Screen>
+            <Tab.Screen name="Profile" component={ProfileScreen} />
+            <Tab.Screen name="About" component={AboutScreen} />
+          </Tab.Navigator>
+        ) : (
+          <Stack.Navigator initialRouteName="Login">
+            <Stack.Screen name="Login">
+              {() => <LoginScreen setAuthToken={setAuthToken} />}
+            </Stack.Screen>
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </Stack.Navigator>
+        )}
       </NavigationContainer>
       <Toast />
     </View>
