@@ -8,6 +8,9 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
+import axios from "axios";
+import { url } from "./utils/config";
 
 function LoginScreen() {
   const Navigation = useNavigation();
@@ -17,6 +20,37 @@ function LoginScreen() {
   };
 
   const [loginDetails, setLoginDetails] = useState(loginData);
+  const [isLoading, setIsLoading] = useState(false);
+
+  function handleLoginText(value, name) {
+    setLoginDetails((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  async function handleLoginSubmit() {
+    const { email, password } = loginDetails;
+    if (!email || !password) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No filed should be empty",
+        text2Style: { fontSize: 18 },
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await axios.post(`${url}/auth/login`, loginDetails);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  }
 
   return (
     <View>
@@ -26,14 +60,16 @@ function LoginScreen() {
           value={loginDetails.email}
           placeholder="Email address"
           style={styles.inputFeild}
+          onChangeText={(value) => handleLoginText(value, "email")}
         />
         <TextInput
           secureTextEntry={true}
           value={loginDetails.password}
           placeholder="Password"
           style={styles.inputFeild}
+          onChangeText={(value) => handleLoginText(value, "password")}
         />
-        <Button title="Submit" />
+        <Button title="Submit" onPress={handleLoginSubmit} />
       </View>
       <View style={styles.loginText}>
         <Text>You do not have an account?</Text>
@@ -50,10 +86,9 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   inputFeild: {
     borderWidth: 2,
-    borderColor: "gray",
+    borderColor: "#c0c0c0",
     height: 40,
     borderRadius: 6,
-    opacity: 0.5,
   },
   inputCon: {
     display: "flex",

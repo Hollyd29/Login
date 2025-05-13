@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { url } from "./utils/config";
 import Toast from "react-native-toast-message";
+import Entypo from "@expo/vector-icons/Entypo";
 
 function RegisterScreen() {
   const Navigation = useNavigation();
@@ -23,6 +24,7 @@ function RegisterScreen() {
 
   const [registerDetails, setRegisterDetails] = useState(registerData);
   const [isLoading, setIsLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   function handleTextChange(value, name) {
     setRegisterDetails((prev) => ({
@@ -40,6 +42,7 @@ function RegisterScreen() {
         text2Style: { fontSize: 18 },
         visibilityTime: 3000,
       });
+      return;
     }
     try {
       setIsLoading(true);
@@ -82,13 +85,24 @@ function RegisterScreen() {
           style={styles.inputFeild}
           onChangeText={(value) => handleTextChange(value, "email")}
         />
-        <TextInput
-          secureTextEntry={false}
-          value={registerDetails.password}
-          placeholder="Password"
-          style={styles.inputFeild}
-          onChangeText={(value) => handleTextChange(value, "password")}
-        />
+        <View style={{ position: "relative" }}>
+          <TextInput
+            secureTextEntry={isVisible}
+            value={registerDetails.password}
+            placeholder="Password"
+            style={styles.inputFeild}
+            onChangeText={(value) => handleTextChange(value, "password")}
+          />
+          <Pressable
+            style={styles.positionEye}
+            onPress={() => setIsVisible(!isVisible)}
+          >
+            {!isVisible && <Entypo name="eye" size={24} color="black" />}
+            {isVisible && (
+              <Entypo name="eye-with-line" size={24} color="black" />
+            )}
+          </Pressable>
+        </View>
 
         <Button
           title={isLoading ? "Loading..." : "Submit"}
@@ -98,7 +112,7 @@ function RegisterScreen() {
       </View>
       <View style={styles.loginText}>
         <Text>You already have an account?</Text>
-        <Pressable onPress={() => Navigation.navigate("Register")}>
+        <Pressable onPress={() => Navigation.navigate("Login")}>
           <Text style={{ color: "purple" }}>Login here</Text>
         </Pressable>
       </View>
@@ -127,5 +141,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginInline: "auto",
     gap: 5,
+  },
+  positionEye: {
+    position: "absolute",
+    right: 20,
+    top: "50%",
+    transform: [{ translateY: "-50%" }],
+    opacity: 0.5,
   },
 });
