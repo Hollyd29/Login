@@ -23,7 +23,7 @@ function LoginScreen({ setAuthToken }) {
 
   const [loginDetails, setLoginDetails] = useState(loginData);
   const [isLoading, setIsLoading] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   function handleLoginText(value, name) {
     setLoginDetails((prev) => ({

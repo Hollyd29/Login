@@ -11,6 +11,8 @@ import { getToken, removeToken } from "./screens/utils/tokenStorage";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ProfileScreen from "./screens/protectedscreen/profilescreen";
 import AboutScreen from "./screens/protectedscreen/aboutscreeen";
+import HalfMessage from "./screens/protectedscreen/halfmessage";
+import AllMessage from "./screens/protectedscreen/allmessage";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -32,6 +34,29 @@ function App() {
   // if (isLogingin) {
   //   return null;
   // }
+  function HomeStack() {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen name="Home">
+          {() => <HomeScreen setAuthToken={setAuthToken} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="HalfMessage"
+          options={{
+            title: "Half Message",
+          }}
+          component={HalfMessage}
+        />
+        <Stack.Screen
+          name="AllMessage"
+          options={{
+            title: "All Message",
+          }}
+          component={AllMessage}
+        />
+      </Stack.Navigator>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -39,8 +64,13 @@ function App() {
       <NavigationContainer>
         {authToken ? (
           <Tab.Navigator>
-            <Tab.Screen name="Home">
-              {() => <HomeScreen setAuthToken={setAuthToken} />}
+            <Tab.Screen
+              name="Home"
+              options={{
+                headerShown: false,
+              }}
+            >
+              {() => <HomeStack setAuthToken={setAuthToken} />}
             </Tab.Screen>
             <Tab.Screen name="Profile" component={ProfileScreen} />
             <Tab.Screen name="About" component={AboutScreen} />
