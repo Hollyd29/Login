@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Button,
   Pressable,
@@ -8,33 +8,32 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import { url } from "./utils/config";
 import Toast from "react-native-toast-message";
+import axios from "axios";
+import { url } from "../utils/config";
 import Entypo from "@expo/vector-icons/Entypo";
 
-function RegisterScreen() {
+function LoginScreen() {
   const Navigation = useNavigation();
-
-  const registerData = {
-    name: "",
+  const loginData = {
     email: "",
     password: "",
   };
 
-  const [registerDetails, setRegisterDetails] = useState(registerData);
+  const [loginDetails, setLoginDetails] = useState(loginData);
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
-  function handleTextChange(value, name) {
-    setRegisterDetails((prev) => ({
+  function handleLoginText(value, name) {
+    setLoginDetails((prev) => ({
       ...prev,
       [name]: value,
     }));
   }
-  async function handleSubmitPress() {
-    const { name, email, password } = registerDetails;
-    if (!name || !email || !password) {
+
+  async function handleLoginSubmit() {
+    const { email, password } = loginDetails;
+    if (!email || !password) {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -44,19 +43,14 @@ function RegisterScreen() {
       });
       return;
     }
+
     try {
       setIsLoading(true);
-      await axios.post(`${url}/auth/register`, registerDetails);
+      const res = await axios.post(`${url}/auth/login`, loginDetails);
       setIsLoading(false);
-      Toast.show({
-        type: "success",
-        text1: "Successful",
-        text2: "Registration Successful",
-        text2Style: { fontSize: 18 },
-        visibilityTime: 3000,
-      });
-      setRegisterDetails(registerData);
+      Navigation.navigate("Home");
     } catch (error) {
+      console.log(error);
       setIsLoading(false);
       Toast.show({
         type: "error",
@@ -72,26 +66,19 @@ function RegisterScreen() {
     <View>
       <View style={styles.inputCon}>
         <TextInput
-          keyboardType="text"
-          value={registerDetails.name}
-          placeholder="Username"
-          style={styles.inputFeild}
-          onChangeText={(value) => handleTextChange(value, "name")}
-        />
-        <TextInput
           keyboardType="email-address"
-          value={registerDetails.email}
+          value={loginDetails.email}
           placeholder="Email address"
           style={styles.inputFeild}
-          onChangeText={(value) => handleTextChange(value, "email")}
+          onChangeText={(value) => handleLoginText(value, "email")}
         />
-        <View style={{ position: "relative" }}>
+        <View>
           <TextInput
             secureTextEntry={isVisible}
-            value={registerDetails.password}
+            value={loginDetails.password}
             placeholder="Password"
             style={styles.inputFeild}
-            onChangeText={(value) => handleTextChange(value, "password")}
+            onChangeText={(value) => handleLoginText(value, "password")}
           />
           <Pressable
             style={styles.positionEye}
@@ -103,29 +90,28 @@ function RegisterScreen() {
             )}
           </Pressable>
         </View>
-
         <Button
           title={isLoading ? "Loading..." : "Submit"}
           disabled={isLoading}
-          onPress={handleSubmitPress}
+          onPress={handleLoginSubmit}
         />
       </View>
       <View style={styles.loginText}>
-        <Text>You already have an account?</Text>
-        <Pressable onPress={() => Navigation.navigate("Login")}>
-          <Text style={{ color: "purple" }}>Login here</Text>
+        <Text>You do not have an account?</Text>
+        <Pressable onPress={() => Navigation.navigate("Register")}>
+          <Text style={{ color: "purple" }}>Register here</Text>
         </Pressable>
       </View>
     </View>
   );
 }
 
-export default RegisterScreen;
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   inputFeild: {
     borderWidth: 2,
-    borderColor: "#8d99ae",
+    borderColor: "#c0c0c0",
     height: 40,
     borderRadius: 6,
   },
